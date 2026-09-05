@@ -80,22 +80,29 @@ export function AlbumsPage() {
   });
   const animalsQuery = useQuery({ queryKey: ["animals"], queryFn: () => getAnimals() });
 
-  const options = useMemo(() => {
-    const themes = Object.keys(PHOTO_ALBUMS).map((key) => ({
-      key,
-      label: THEME_LABELS[key] ?? key,
-      group: "Thema's",
-    }));
-    const animals = (animalsQuery.data ?? []).map((a) => ({
-      key: animalAlbumKey(a.id),
-      label: `${a.name}${a.species ? ` — ${a.species}` : ""}`,
-      group: "Bewoners",
-    }));
-    return [...themes, ...animals];
-  }, [animalsQuery.data]);
+  const themeOptions = useMemo(
+    () =>
+      Object.keys(PHOTO_ALBUMS)
+        .map((key) => ({ key, label: THEME_LABELS[key] ?? key }))
+        .sort((a, b) => a.label.localeCompare(b.label, "nl")),
+    [],
+  );
+  const animalOptions = useMemo(
+    () =>
+      (animalsQuery.data ?? [])
+        .map((a) => ({
+          key: animalAlbumKey(a.id),
+          label: `${a.name}${a.species ? ` (${a.species})` : ""}`,
+          animal: a,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label, "nl")),
+    [animalsQuery.data],
+  );
 
   const [albumKey, setAlbumKey] = useState<string>("erf");
   const photos: AlbumPhoto[] = albumsQuery.data?.[albumKey] ?? [];
+  const currentAnimal = animalOptions.find((o) => o.key === albumKey)?.animal ?? null;
+
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<{ name: string; percent: number }[]>([]);
