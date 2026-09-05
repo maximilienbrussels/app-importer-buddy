@@ -62,6 +62,10 @@ export async function ensureShopTables(): Promise<boolean> {
       created_at timestamptz not null default now()
     )
   `;
+  // Rollen: hoofdfoto (kaartbeeld) en hoverfoto (tweede beeld in het raster).
+  await sql`alter table product_images add column if not exists is_primary boolean not null default false`;
+  await sql`alter table product_images add column if not exists is_hover boolean not null default false`;
+  await sql`alter table product_images add column if not exists file_key text`;
   await sql`create index if not exists product_images_product_id_idx on product_images(product_id)`;
   await sql`create index if not exists product_images_position_idx on product_images(product_id, position)`;
 
@@ -108,13 +112,16 @@ export type PortalProductImageRow = {
   url: string | null;
   alt: string | null;
   position: number;
+  is_primary: boolean;
+  is_hover: boolean;
+  file_key: string | null;
 };
 
 export async function listPortalProductImages(productId: number): Promise<PortalProductImageRow[]> {
   await ensureShopTables();
   const { db } = await import("./neon.server");
   const rows = (await db()`
-    select id, product_id, media_id, url, alt, position
+    select id, product_id, media_id, url, alt, position, is_primary, is_hover, file_key
     from product_images
     where product_id = ${productId}
     order by position
