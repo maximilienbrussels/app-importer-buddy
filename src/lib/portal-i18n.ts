@@ -28,6 +28,7 @@ const dict: Dict = {
   "nav.team": { fr: "Équipe", nl: "Team", en: "Team" },
   "nav.shop": { fr: "Produits & Boutique", nl: "Producten & Webshop", en: "Products & Shop" },
   "nav.academy": { fr: "Académies", nl: "Academies", en: "Academies" },
+  "nav.social": { fr: "Réseaux sociaux", nl: "Social Media", en: "Social Media" },
   "nav.albums": { fr: "Albums photos", nl: "Fotoalbums", en: "Photo albums" },
   "nav.residents": { fr: "Résidents & animaux", nl: "Bewoners & dieren", en: "Residents & animals" },
   "nav.media": { fr: "Médiathèque", nl: "Mediabibliotheek", en: "Media library" },
