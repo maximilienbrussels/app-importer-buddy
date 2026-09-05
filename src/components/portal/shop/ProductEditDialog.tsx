@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { ADMIN_AVAILABILITY_OPTIONS, normalizeAvailability } from "@/lib/product-status";
 import { updateProduct as updateProductFn } from "@/lib/shop-admin.functions";
-import { ProductImagesEditor } from "./ProductImagesEditor";
+import { ProductMediaManager } from "@/components/admin/products/ProductMediaManager";
 import type { ProductRow } from "./types";
 
 /** Volledig bewerkingsdialoog per product: NL/FR/EN velden, prijs, voorraad, status en foto's. */
@@ -192,7 +192,7 @@ export function ProductEditDialog({
               />
             </div>
 
-            <ProductImagesEditor productId={product.id} />
+            <ProductMediaManager productId={product.id} />
           </div>
         ) : null}
 
