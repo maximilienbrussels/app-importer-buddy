@@ -6,11 +6,10 @@
  *      bezoeker krijgt altijd meteen een geslaagde melding te zien.
  *   2. Bestemming opzoeken: de categorie uit `contact_routes` / `email_settings`,
  *      met terugval op BREVO_SENDER_EMAIL of contact@maximilien.brussels.
- *   3. Eerste poging: Brevo REST API v3.
- *   4. Mislukt Brevo (timeout, 4xx, 5xx, ontbrekende sleutel), dan volgt
- *      automatisch een tweede poging via de Infomaniak-SMTP-server.
- *   5. Lukt geen van beide, dan krijgt de rij status `failed` met de exacte fout
- *      in `error_log`, zodat een beheerder ze in het portaal kan herversturen.
+ *   3. Verzending: uitsluitend via de Brevo REST API v3 (transactionele HTTP-API).
+ *   4. Mislukt Brevo (timeout, 4xx, 5xx, ontbrekende sleutel), dan krijgt de rij
+ *      status `failed` met de exacte fout in `error_log`, zodat een beheerder ze
+ *      in het portaal kan herversturen.
  *
  * Server-only: dit bestand eindigt op `.server.ts` en komt nooit in de browser.
  */
@@ -27,19 +26,6 @@ export type DispatchResult = {
   error?: string;
 };
 
-/** Waarschuwt (zonder te crashen) wanneer de SMTP-terugval niet volledig is. */
-export function smtpFallbackReady(): boolean {
-  const env = process.env;
-  const missing = ["SMTP_HOST", "SMTP_USER", "SMTP_PASS"].filter((k) => !env[k]);
-  if (missing.length) {
-    console.warn(
-      `[email-service] SMTP-terugval onvolledig — ontbrekend: ${missing.join(", ")}. Brevo blijft de enige route.`,
-    );
-    return false;
-  }
-  return true;
-}
-
 /** Bestemmingsadres(sen) voor een categorie; nooit leeg. */
 export async function categoryRecipients(category?: string): Promise<string[]> {
   try {
@@ -54,8 +40,8 @@ export async function categoryRecipients(category?: string): Promise<string[]> {
 }
 
 /**
- * Verstuurt één mail met dubbele lijn: eerst Brevo, dan Infomaniak-SMTP.
- * Geeft terug welke route het haalde en — bij falen — beide foutmeldingen.
+ * Verstuurt één mail via de Brevo HTTP-API. Er is bewust géén SMTP-terugval
+ * meer: één route betekent één duidelijke foutmelding in het logboek.
  */
 export async function sendDual(opts: {
   to: string[];
@@ -79,7 +65,6 @@ export async function sendDual(opts: {
     ...(opts.replyTo ? { replyTo: opts.replyTo } : {}),
   };
 
-  // Stap B — Brevo REST API v3.
   let brevoError = "";
   try {
     const res = await sendMail({ ...base, kind: `${opts.kind}:brevo`, transport: "brevo" });
@@ -90,44 +75,9 @@ export async function sendDual(opts: {
   } catch (err) {
     brevoError = (err as Error).message;
   }
-  console.error(`[email-service] Brevo mislukt (${opts.kind}): ${brevoError} — SMTP-terugval`);
 
-  // Stap C — Infomaniak SMTP als terugval, met eigen foutafhandeling.
-  let smtpError = "";
-  let smtpConfigured = smtpFallbackReady();
-  if (!smtpConfigured) {
-    // Env onvolledig: de instellingen kunnen nog uit de databank komen.
-    try {
-      const { smtpConfigStatus } = await import("./smtp.server");
-      smtpConfigured = (await smtpConfigStatus()).complete;
-    } catch (err) {
-      console.warn(`[email-service] SMTP-instellingen niet leesbaar: ${(err as Error).message}`);
-      smtpConfigured = false;
-    }
-  }
-  if (!smtpConfigured) {
-    const error = `Brevo: ${brevoError} | SMTP: overgeslagen (geen volledige SMTP-instellingen)`;
-    console.warn(`[email-service] SMTP-terugval overgeslagen (${opts.kind})`);
-    return { status: "failed", transport: null, error };
-  }
-  try {
-    const res = await sendMail({ ...base, kind: `${opts.kind}:smtp`, transport: "smtp" });
-    if (res.sent) {
-      return {
-        status: "sent_smtp_fallback",
-        transport: res.transport ?? "smtp",
-        error: `Brevo: ${brevoError}`,
-      };
-    }
-    smtpError = res.error || res.reason || "onbekende SMTP-fout";
-  } catch (err) {
-    smtpError = (err as Error).message;
-  }
-
-  // Stap D — beide routes mislukt.
-  const error = `Brevo: ${brevoError} | SMTP: ${smtpError}`;
-  console.error(`[email-service] beide routes mislukt (${opts.kind}): ${error}`);
-  return { status: "failed", transport: null, error };
+  console.error(`[email-service] Brevo mislukt (${opts.kind}): ${brevoError}`);
+  return { status: "failed", transport: null, error: `Brevo: ${brevoError}` };
 }
 
 /**

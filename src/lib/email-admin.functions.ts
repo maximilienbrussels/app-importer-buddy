@@ -367,15 +367,20 @@ export const fetchSubmissions = createServerFn({ method: "GET" })
   });
 
 /**
- * Stuurt een bewaarde inzending opnieuw via de dubbele lijn (Brevo, dan
- * Infomaniak-SMTP) en werkt de status bij.
+ * Stuurt een bewaarde inzending opnieuw via de Brevo HTTP-API en werkt de
+ * status bij. Optioneel naar een gecorrigeerd adres.
  */
 export const resendSubmission = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .inputValidator((d: unknown) =>
+    z
+      .object({ id: z.string().uuid(), to: z.string().trim().email().optional() })
+      .parse(d),
+  )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { getSubmission } = await import("./email-settings.server");
+    const { getSubmission, updateSubmissionEmail } = await import("./email-settings.server");
+    if (data.to) await updateSubmissionEmail(data.id, data.to);
     const submission = await getSubmission(data.id);
     if (!submission) throw new Error("Deze inzending bestaat niet meer.");
 
@@ -396,4 +401,40 @@ export const resendSubmission = createServerFn({ method: "POST" })
       kind: `${submission.form}:opnieuw`,
     });
     return { status: out.status, error: out.error ?? null };
+  });
+
+/** Corrigeert het e-mailadres van een inzending (zonder te herversturen). */
+export const updateSubmissionRecipient = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ id: z.string().uuid(), email: z.string().trim().email() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { updateSubmissionEmail } = await import("./email-settings.server");
+    const ok = await updateSubmissionEmail(data.id, data.email);
+    if (!ok) throw new Error("Databank niet beschikbaar.");
+    return { ok: true };
+  });
+
+/** Verwijdert één regel uit het inzendingenlogboek. */
+export const deleteSubmissionFn = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { deleteSubmission } = await import("./email-settings.server");
+    const ok = await deleteSubmission(data.id);
+    if (!ok) throw new Error("Databank niet beschikbaar.");
+    return { ok: true };
+  });
+
+/** Ruimt in één klik alle mislukte óf alle verstuurde logregels op. */
+export const cleanupSubmissionsFn = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .inputValidator((d: unknown) => z.object({ scope: z.enum(["failed", "sent"]) }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { cleanupSubmissions } = await import("./email-settings.server");
+    return { removed: await cleanupSubmissions(data.scope) };
   });

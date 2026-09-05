@@ -67,24 +67,18 @@ export const diagnoseLoginAndMail = createServerFn({ method: "GET" })
       ...(key ? {} : { hint: "Zet BREVO_API_KEY als geheime sleutel in het project." }),
     });
 
-    checks.push({
-      id: "smtp-fallback",
-      label: "SMTP-terugval",
-      status: cfg.complete ? "ok" : "warn",
-      detail: cfg.complete
-        ? `SMTP ingesteld via ${cfg.source} (${cfg.host}:${cfg.port}).`
-        : "Geen SMTP-gegevens; er is dus geen terugval als Brevo faalt.",
-    });
-
     const fromDomain = cfg.fromAddress.split("@")[1] ?? "";
+    const knownDomain = ["maximilien.site", "maximilien.brussels"].includes(fromDomain);
     checks.push({
       id: "sender",
-      label: "Afzenderadres",
-      status: cfg.fromAddress ? "ok" : "fail",
-      detail: `${cfg.fromName} <${cfg.fromAddress}>`,
+      label: "Afzenderdomein",
+      status: cfg.fromAddress ? (knownDomain ? "ok" : "warn") : "fail",
+      detail: cfg.fromAddress
+        ? `${cfg.fromName} <${cfg.fromAddress}>`
+        : "Geen afzenderadres ingesteld.",
       hint: fromDomain
-        ? `Het domein ${fromDomain} moet in Brevo geverifieerd zijn (SPF + DKIM), anders weigert Brevo of belandt de mail in spam.`
-        : "Stel een afzenderadres in.",
+        ? `Het domein ${fromDomain} moet in Brevo geverifieerd zijn (SPF + DKIM). Aanbevolen afzender: noreply@maximilien.site.`
+        : "Stel een afzenderadres in, bij voorkeur noreply@maximilien.site.",
     });
 
     /* ---------------------------- Neon Auth --------------------------- */
@@ -165,6 +159,8 @@ export const diagnoseLoginAndMail = createServerFn({ method: "GET" })
       origins: [
         "https://maximilien.brussels",
         "https://www.maximilien.brussels",
+        "https://maximilien.site",
+        "https://www.maximilien.site",
         "http://localhost:8080",
       ],
     };

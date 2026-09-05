@@ -95,7 +95,7 @@ async function render(
   }
 }
 
-/** Verstuurt een sjabloonmail via Brevo (met SMTP-terugval) en logt het resultaat. */
+/** Verstuurt een sjabloonmail via de Brevo HTTP-API en logt het resultaat. */
 export async function sendTemplateMail(opts: SendMailOptions): Promise<SendMailDiagnostics> {
   const { sendMail } = await import("./email.server");
   const rendered = await render(opts);
