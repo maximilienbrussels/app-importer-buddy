@@ -114,6 +114,10 @@ import { Route as ApiAdminCoPilotUndoRouteImport } from './routes/api/admin/co-p
 import { Route as ApiAuthCallbackGithubRouteImport } from './routes/api/auth/callback/github'
 import { Route as ApiAuthCallbackGoogleRouteImport } from './routes/api/auth/callback/google'
 import { Route as ApiAuthCallbackMastodonRouteImport } from './routes/api/auth/callback/mastodon'
+import { Route as ApiMediaScalewayDeleteRouteImport } from './routes/api/media/scaleway/delete'
+import { Route as ApiMediaScalewayListRouteImport } from './routes/api/media/scaleway/list'
+import { Route as ApiMediaScalewaySimilarRouteImport } from './routes/api/media/scaleway/similar'
+import { Route as ApiMediaScalewayUploadRouteImport } from './routes/api/media/scaleway/upload'
 import { Route as ApiPublicCalendarFeedRouteImport } from './routes/api/public/calendar/feed'
 import { Route as ApiPublicMediaIdRouteImport } from './routes/api/public/media/$id'
 import { Route as ApiPublicPickupPassRouteImport } from './routes/api/public/pickup/pass'
@@ -659,6 +663,26 @@ const ApiAuthCallbackMastodonRoute = ApiAuthCallbackMastodonRouteImport.update({
   path: '/api/auth/callback/mastodon',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMediaScalewayDeleteRoute = ApiMediaScalewayDeleteRouteImport.update({
+  id: '/api/media/scaleway/delete',
+  path: '/api/media/scaleway/delete',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMediaScalewayListRoute = ApiMediaScalewayListRouteImport.update({
+  id: '/api/media/scaleway/list',
+  path: '/api/media/scaleway/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMediaScalewaySimilarRoute = ApiMediaScalewaySimilarRouteImport.update({
+  id: '/api/media/scaleway/similar',
+  path: '/api/media/scaleway/similar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMediaScalewayUploadRoute = ApiMediaScalewayUploadRouteImport.update({
+  id: '/api/media/scaleway/upload',
+  path: '/api/media/scaleway/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCalendarFeedRoute = ApiPublicCalendarFeedRouteImport.update({
   id: '/api/public/calendar/feed',
   path: '/api/public/calendar/feed',
@@ -816,6 +840,10 @@ export interface FileRoutesByFullPath {
   '/api/auth/callback/github': typeof ApiAuthCallbackGithubRoute
   '/api/auth/callback/google': typeof ApiAuthCallbackGoogleRoute
   '/api/auth/callback/mastodon': typeof ApiAuthCallbackMastodonRoute
+  '/api/media/scaleway/delete': typeof ApiMediaScalewayDeleteRoute
+  '/api/media/scaleway/list': typeof ApiMediaScalewayListRoute
+  '/api/media/scaleway/similar': typeof ApiMediaScalewaySimilarRoute
+  '/api/media/scaleway/upload': typeof ApiMediaScalewayUploadRoute
   '/api/public/calendar/feed': typeof ApiPublicCalendarFeedRoute
   '/api/public/media/$id': typeof ApiPublicMediaIdRoute
   '/api/public/pickup/pass': typeof ApiPublicPickupPassRoute
@@ -930,6 +958,10 @@ export interface FileRoutesByTo {
   '/api/auth/callback/github': typeof ApiAuthCallbackGithubRoute
   '/api/auth/callback/google': typeof ApiAuthCallbackGoogleRoute
   '/api/auth/callback/mastodon': typeof ApiAuthCallbackMastodonRoute
+  '/api/media/scaleway/delete': typeof ApiMediaScalewayDeleteRoute
+  '/api/media/scaleway/list': typeof ApiMediaScalewayListRoute
+  '/api/media/scaleway/similar': typeof ApiMediaScalewaySimilarRoute
+  '/api/media/scaleway/upload': typeof ApiMediaScalewayUploadRoute
   '/api/public/calendar/feed': typeof ApiPublicCalendarFeedRoute
   '/api/public/media/$id': typeof ApiPublicMediaIdRoute
   '/api/public/pickup/pass': typeof ApiPublicPickupPassRoute
@@ -1048,6 +1080,10 @@ export interface FileRoutesById {
   '/api/auth/callback/github': typeof ApiAuthCallbackGithubRoute
   '/api/auth/callback/google': typeof ApiAuthCallbackGoogleRoute
   '/api/auth/callback/mastodon': typeof ApiAuthCallbackMastodonRoute
+  '/api/media/scaleway/delete': typeof ApiMediaScalewayDeleteRoute
+  '/api/media/scaleway/list': typeof ApiMediaScalewayListRoute
+  '/api/media/scaleway/similar': typeof ApiMediaScalewaySimilarRoute
+  '/api/media/scaleway/upload': typeof ApiMediaScalewayUploadRoute
   '/api/public/calendar/feed': typeof ApiPublicCalendarFeedRoute
   '/api/public/media/$id': typeof ApiPublicMediaIdRoute
   '/api/public/pickup/pass': typeof ApiPublicPickupPassRoute
@@ -1166,6 +1202,10 @@ export interface FileRouteTypes {
     | '/api/auth/callback/github'
     | '/api/auth/callback/google'
     | '/api/auth/callback/mastodon'
+    | '/api/media/scaleway/delete'
+    | '/api/media/scaleway/list'
+    | '/api/media/scaleway/similar'
+    | '/api/media/scaleway/upload'
     | '/api/public/calendar/feed'
     | '/api/public/media/$id'
     | '/api/public/pickup/pass'
@@ -1280,6 +1320,10 @@ export interface FileRouteTypes {
     | '/api/auth/callback/github'
     | '/api/auth/callback/google'
     | '/api/auth/callback/mastodon'
+    | '/api/media/scaleway/delete'
+    | '/api/media/scaleway/list'
+    | '/api/media/scaleway/similar'
+    | '/api/media/scaleway/upload'
     | '/api/public/calendar/feed'
     | '/api/public/media/$id'
     | '/api/public/pickup/pass'
@@ -1397,6 +1441,10 @@ export interface FileRouteTypes {
     | '/api/auth/callback/github'
     | '/api/auth/callback/google'
     | '/api/auth/callback/mastodon'
+    | '/api/media/scaleway/delete'
+    | '/api/media/scaleway/list'
+    | '/api/media/scaleway/similar'
+    | '/api/media/scaleway/upload'
     | '/api/public/calendar/feed'
     | '/api/public/media/$id'
     | '/api/public/pickup/pass'
@@ -1501,6 +1549,10 @@ export interface RootRouteChildren {
   ApiAuthCallbackGithubRoute: typeof ApiAuthCallbackGithubRoute
   ApiAuthCallbackGoogleRoute: typeof ApiAuthCallbackGoogleRoute
   ApiAuthCallbackMastodonRoute: typeof ApiAuthCallbackMastodonRoute
+  ApiMediaScalewayDeleteRoute: typeof ApiMediaScalewayDeleteRoute
+  ApiMediaScalewayListRoute: typeof ApiMediaScalewayListRoute
+  ApiMediaScalewaySimilarRoute: typeof ApiMediaScalewaySimilarRoute
+  ApiMediaScalewayUploadRoute: typeof ApiMediaScalewayUploadRoute
   ApiPublicCalendarFeedRoute: typeof ApiPublicCalendarFeedRoute
   ApiPublicMediaIdRoute: typeof ApiPublicMediaIdRoute
   ApiPublicPickupPassRoute: typeof ApiPublicPickupPassRoute
@@ -2248,6 +2300,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthCallbackMastodonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/media/scaleway/delete': {
+      id: '/api/media/scaleway/delete'
+      path: '/api/media/scaleway/delete'
+      fullPath: '/api/media/scaleway/delete'
+      preLoaderRoute: typeof ApiMediaScalewayDeleteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/media/scaleway/list': {
+      id: '/api/media/scaleway/list'
+      path: '/api/media/scaleway/list'
+      fullPath: '/api/media/scaleway/list'
+      preLoaderRoute: typeof ApiMediaScalewayListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/media/scaleway/similar': {
+      id: '/api/media/scaleway/similar'
+      path: '/api/media/scaleway/similar'
+      fullPath: '/api/media/scaleway/similar'
+      preLoaderRoute: typeof ApiMediaScalewaySimilarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/media/scaleway/upload': {
+      id: '/api/media/scaleway/upload'
+      path: '/api/media/scaleway/upload'
+      fullPath: '/api/media/scaleway/upload'
+      preLoaderRoute: typeof ApiMediaScalewayUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/calendar/feed': {
       id: '/api/public/calendar/feed'
       path: '/api/public/calendar/feed'
@@ -2500,6 +2580,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthCallbackGithubRoute: ApiAuthCallbackGithubRoute,
   ApiAuthCallbackGoogleRoute: ApiAuthCallbackGoogleRoute,
   ApiAuthCallbackMastodonRoute: ApiAuthCallbackMastodonRoute,
+  ApiMediaScalewayDeleteRoute: ApiMediaScalewayDeleteRoute,
+  ApiMediaScalewayListRoute: ApiMediaScalewayListRoute,
+  ApiMediaScalewaySimilarRoute: ApiMediaScalewaySimilarRoute,
+  ApiMediaScalewayUploadRoute: ApiMediaScalewayUploadRoute,
   ApiPublicCalendarFeedRoute: ApiPublicCalendarFeedRoute,
   ApiPublicMediaIdRoute: ApiPublicMediaIdRoute,
   ApiPublicPickupPassRoute: ApiPublicPickupPassRoute,
