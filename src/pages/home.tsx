@@ -7,7 +7,8 @@ import { LocalLink } from "@/components/LocalLink";
 import { pathFor } from "@/lib/routes-i18n";
 import { useT, formatT } from "@/lib/i18n";
 import { computeOpenStatus, getAnimals, getHours, getOrganisation } from "@/lib/data.functions";
-import { imageForSpecies } from "@/lib/animal-images";
+import { ResidentPhoto } from "@/components/ResidentPhoto";
+import { useAlbumPhotos } from "@/lib/use-album-photos";
 import { FarmFeed } from "@/components/FarmFeed";
 import type { Lang } from "@/lib/i18n";
 import { fetchPageContent } from "@/lib/page-content.functions";
@@ -134,6 +135,7 @@ function EditorialGrid({
   vision: string;
 }) {
   const { t, lang } = useT();
+  const albums = useAlbumPhotos();
   const preview = animals.slice(0, 3);
   return (
     <section className="grid grid-cols-1 gap-8 py-12 lg:grid-cols-12 lg:gap-10">
@@ -160,7 +162,6 @@ function EditorialGrid({
           </div>
           <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
             {preview.map((a) => {
-              const img = imageForSpecies(a.species);
               return (
                 <Link
                   key={a.id}
@@ -169,19 +170,11 @@ function EditorialGrid({
                   className="group block"
                 >
                   <div className="aspect-square overflow-hidden rounded-2xl bg-secondary">
-                    {img ? (
-                      <img
-                        onError={handleImageError}
-                        src={img}
-                        alt={`${a.name} — ${a.species}`}
-                        loading="lazy"
-                        className="h-full w-full object-cover object-[50%_35%] transition-transform duration-700 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="grid h-full w-full place-items-center text-xs text-muted-foreground">
-                        {a.name}
-                      </div>
-                    )}
+                    <ResidentPhoto
+                      animal={a}
+                      albums={albums}
+                      className="transition-transform duration-700 group-hover:scale-105"
+                    />
                   </div>
                   <p className="font-serif mt-3 text-xl italic">{a.name}</p>
                   <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">

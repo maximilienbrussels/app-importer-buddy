@@ -22,6 +22,7 @@ import { TeamPage } from "@/components/portal/pages/TeamPage";
 import { EmailPage } from "@/components/portal/pages/EmailPage";
 import { SocialPage } from "@/components/portal/pages/SocialPage";
 import { AlbumsPage } from "@/components/portal/pages/AlbumsPage";
+import { ResidentsPage } from "@/components/portal/pages/ResidentsPage";
 import { SitePage } from "@/components/portal/pages/SitePage";
 import { LogPage } from "@/components/portal/pages/LogPage";
 import { ApiKeysPage } from "@/components/portal/pages/ApiKeysPage";
@@ -36,6 +37,7 @@ const PAGES: Record<PortalPage, () => React.ReactElement> = {
   academy: AcademyPage,
   social: SocialPage,
   albums: AlbumsPage,
+  residents: ResidentsPage,
   team: TeamPage,
   email: EmailPage,
   site: SitePage,
@@ -54,6 +56,7 @@ export const PAGE_PERMISSION: Record<PortalPage, Permission> = {
   academy: "view_academy",
   social: "view_media",
   albums: "view_media",
+  residents: "view_media",
   team: "view_team",
   email: "manage_rights",
   site: "manage_settings",

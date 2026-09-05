@@ -9,7 +9,7 @@ import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, ImagePlus, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ImagePlus, Loader2, Star, Trash2 } from "lucide-react";
 
 import { PageHeader } from "@/components/portal/portal-ui";
 import { Button } from "@/components/ui/button";
@@ -19,13 +19,16 @@ import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { usePermissions } from "@/lib/use-permissions";
 import { getAnimals } from "@/lib/data.functions";
 import { PHOTO_ALBUMS } from "@/lib/photo-albums";
+import { setAnimalImage } from "@/lib/animals-admin.functions";
 import { animalAlbumKey } from "@/lib/use-album-photos";
 import {
   addAlbumPhotos,
@@ -80,22 +83,29 @@ export function AlbumsPage() {
   });
   const animalsQuery = useQuery({ queryKey: ["animals"], queryFn: () => getAnimals() });
 
-  const options = useMemo(() => {
-    const themes = Object.keys(PHOTO_ALBUMS).map((key) => ({
-      key,
-      label: THEME_LABELS[key] ?? key,
-      group: "Thema's",
-    }));
-    const animals = (animalsQuery.data ?? []).map((a) => ({
-      key: animalAlbumKey(a.id),
-      label: `${a.name}${a.species ? ` — ${a.species}` : ""}`,
-      group: "Bewoners",
-    }));
-    return [...themes, ...animals];
-  }, [animalsQuery.data]);
+  const themeOptions = useMemo(
+    () =>
+      Object.keys(PHOTO_ALBUMS)
+        .map((key) => ({ key, label: THEME_LABELS[key] ?? key }))
+        .sort((a, b) => a.label.localeCompare(b.label, "nl")),
+    [],
+  );
+  const animalOptions = useMemo(
+    () =>
+      (animalsQuery.data ?? [])
+        .map((a) => ({
+          key: animalAlbumKey(a.id),
+          label: `${a.name}${a.species ? ` (${a.species})` : ""}`,
+          animal: a,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label, "nl")),
+    [animalsQuery.data],
+  );
 
   const [albumKey, setAlbumKey] = useState<string>("erf");
   const photos: AlbumPhoto[] = albumsQuery.data?.[albumKey] ?? [];
+  const currentAnimal = animalOptions.find((o) => o.key === albumKey)?.animal ?? null;
+
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<{ name: string; percent: number }[]>([]);
@@ -143,6 +153,30 @@ export function AlbumsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const setImage = useServerFn(setAnimalImage);
+  const avatarMutation = useMutation({
+    mutationFn: (input: { id: number; imageUrl: string }) => setImage({ data: input }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["animals"] });
+      void queryClient.invalidateQueries({ queryKey: ["animals-admin"] });
+      toast.success("Profielfoto ingesteld.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  /** Na een upload in een dierenalbum: aanbieden als profielfoto. */
+  function offerAvatar(url: string) {
+    const animal = currentAnimal;
+    if (!animal || animal.image_url) return;
+    toast("Deze foto instellen als profielfoto van " + animal.name + "?", {
+      action: {
+        label: "Instellen",
+        onClick: () => avatarMutation.mutate({ id: animal.id, imageUrl: url }),
+      },
+      duration: 12000,
+    });
+  }
+
   async function uploadFiles(files: File[]) {
     const images = files.filter((f) => f.type.startsWith("image/"));
     if (!images.length) return;
@@ -167,6 +201,7 @@ export function AlbumsPage() {
         albumKey,
         photos: uploaded.map((u) => ({ ...u, altNl: "", altFr: "", altEn: "" })),
       });
+      offerAvatar(uploaded[0]!.url);
     }
   }
 
@@ -196,11 +231,28 @@ export function AlbumsPage() {
               <SelectValue placeholder="Kies een album" />
             </SelectTrigger>
             <SelectContent>
-              {options.map((o) => (
-                <SelectItem key={o.key} value={o.key}>
-                  {o.group} · {o.label}
-                </SelectItem>
-              ))}
+              <SelectGroup>
+                <SelectLabel>Individuele bewoners</SelectLabel>
+                {animalOptions.length === 0 ? (
+                  <SelectItem value="__geen" disabled>
+                    Nog geen dieren in de databank
+                  </SelectItem>
+                ) : (
+                  animalOptions.map((o) => (
+                    <SelectItem key={o.key} value={o.key}>
+                      {o.label}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectGroup>
+              <SelectGroup>
+                <SelectLabel>Algemene thema's</SelectLabel>
+                {themeOptions.map((o) => (
+                  <SelectItem key={o.key} value={o.key}>
+                    Thema: {o.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
             </SelectContent>
           </Select>
         </div>
@@ -260,6 +312,12 @@ export function AlbumsPage() {
               onMove={(dir) => move(index, dir)}
               onSave={(alt) => updateMutation.mutate({ id: photo.id, ...alt })}
               onDelete={() => deleteMutation.mutate(photo.id)}
+              isAvatar={currentAnimal?.image_url === photo.url}
+              onSetAvatar={
+                currentAnimal
+                  ? () => avatarMutation.mutate({ id: currentAnimal.id, imageUrl: photo.url })
+                  : undefined
+              }
             />
           ))}
         </ul>
@@ -276,6 +334,8 @@ function PhotoCard({
   onMove,
   onSave,
   onDelete,
+  onSetAvatar,
+  isAvatar,
 }: {
   photo: AlbumPhoto;
   first: boolean;
@@ -284,6 +344,8 @@ function PhotoCard({
   onMove: (dir: -1 | 1) => void;
   onSave: (alt: { altNl: string; altFr: string; altEn: string }) => void;
   onDelete: () => void;
+  onSetAvatar?: (() => void) | undefined;
+  isAvatar?: boolean;
 }) {
   const [alt, setAlt] = useState({
     altNl: photo.alt.nl,
@@ -352,6 +414,19 @@ function PhotoCard({
           >
             Bewaren
           </Button>
+          {onSetAvatar ? (
+            <Button
+              type="button"
+              variant={isAvatar ? "secondary" : "outline"}
+              size="icon"
+              disabled={!canManage || isAvatar}
+              onClick={() => onSetAvatar()}
+              title={isAvatar ? "Dit is de profielfoto" : "Als profielfoto instellen"}
+              aria-label="Als profielfoto instellen"
+            >
+              <Star className={cn("size-4", isAvatar && "fill-current")} />
+            </Button>
+          ) : null}
           <Button
             type="button"
             variant="destructive"

@@ -3,7 +3,7 @@ import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { NavHeader } from "@/components/NavHeader";
 import { useT } from "@/lib/i18n";
 import { getAnimals } from "@/lib/data.functions";
-import { imageForSpecies } from "@/lib/animal-images";
+import { ResidentPhoto } from "@/components/ResidentPhoto";
 import { animalSlug, pathFor, speciesIn, type Lang } from "@/lib/routes-i18n";
 import { PhotoCarousel } from "@/components/PhotoCarousel";
 import {
@@ -84,12 +84,13 @@ export function AnimalsPage() {
               to={pathFor("animals", lang, animalSlug(a, lang))}
               className="group overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-lg"
             >
-              <img onError={handleImageError}
-                src={a.image_url || imageForSpecies(a.species) || undefined}
-                alt={`${a.name} — ${speciesIn(a.species, lang)}`}
-                loading="lazy"
-                className="aspect-[4/3] w-full object-cover object-[50%_35%]"
-              />
+              <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
+                <ResidentPhoto
+                  animal={a}
+                  albums={managed}
+                  speciesLabel={speciesIn(a.species, lang)}
+                />
+              </div>
               <div className="p-4">
                 <h2 className="font-serif text-xl text-foreground">{a.name}</h2>
                 <p className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -202,11 +203,13 @@ export function AnimalDetailPage({ slug }: { slug: string }) {
         >
           ← {c.back}
         </LocalLink>
-        <img loading="lazy" onError={handleImageError}
-          src={animal.image_url || imageForSpecies(animal.species) || undefined}
-          alt={`${animal.name} — ${speciesIn(animal.species, lang)}`}
-          className="mt-4 aspect-video w-full rounded-2xl object-cover object-[50%_35%]"
-        />
+        <div className="mt-4 aspect-video w-full overflow-hidden rounded-2xl bg-muted">
+          <ResidentPhoto
+            animal={animal}
+            albums={managed}
+            speciesLabel={speciesIn(animal.species, lang)}
+          />
+        </div>
         <h1 className="mt-6 font-serif text-4xl text-foreground">{animal.name}</h1>
         <p className="text-sm uppercase tracking-wide text-muted-foreground">
           {speciesIn(animal.species, lang)}
