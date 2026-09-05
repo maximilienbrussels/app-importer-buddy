@@ -101,7 +101,6 @@ type StatusResponse = {
 
 export function SponsorPage() {
   const { lang } = useT();
-  const albumPhotos = useAlbumPhotos();
 
   const c = COPY[lang];
   const { data: animals } = useSuspenseQuery(animalsQO);
@@ -180,6 +179,7 @@ function SponsorForm({
   lang: Lang;
   c: (typeof COPY)[Lang];
 }) {
+  const albumPhotos = useAlbumPhotos();
   const [animal, setAnimal] = useState<Animal | null>(null);
   const [tier, setTier] = useState<Tier | null>(null);
   const [name, setName] = useState("");
