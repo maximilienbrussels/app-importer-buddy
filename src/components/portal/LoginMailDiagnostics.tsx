@@ -1,41 +1,55 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertTriangle, CheckCircle2, ShieldAlert, Stethoscope } from "lucide-react";
+import { Loader2, Stethoscope } from "lucide-react";
 import { useEffect, useState } from "react";
 import { diagnoseLoginAndMail, type DiagnosticCheck } from "@/lib/login-diagnostics.functions";
 import { getMissingI18nKeys } from "@/lib/i18n";
 import { getMissingPortalI18nKeys } from "@/lib/portal-i18n";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-const ICON = {
-  ok: CheckCircle2,
-  warn: AlertTriangle,
-  fail: ShieldAlert,
+const DOT = {
+  ok: "bg-success",
+  warn: "bg-warning",
+  fail: "bg-destructive",
 } as const;
 
 const TONE = {
-  ok: "text-success",
-  warn: "text-warning-foreground",
-  fail: "text-destructive",
+  ok: "border-success/30 bg-success/10 text-success",
+  warn: "border-warning/40 bg-warning/15 text-warning-foreground",
+  fail: "border-destructive/30 bg-destructive/10 text-destructive",
 } as const;
 
-function CheckRow({ check }: { check: DiagnosticCheck }) {
-  const Icon = ICON[check.status];
+/** Eén compacte badge per controle; details in de tooltip. */
+function StatusBadge({ check }: { check: DiagnosticCheck }) {
   return (
-    <li className="flex gap-3 rounded-lg border border-border/70 p-3">
-      <Icon className={cn("mt-0.5 size-4 shrink-0", TONE[check.status])} />
-      <div className="min-w-0">
-        <p className="text-sm font-semibold">{check.label}</p>
-        <p className="text-sm break-words text-muted-foreground">{check.detail}</p>
-        {check.hint ? (
-          <p className="mt-1 text-xs break-words text-muted-foreground/80">{check.hint}</p>
-        ) : null}
-      </div>
-    </li>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold",
+            TONE[check.status],
+          )}
+        >
+          <span className={cn("size-2 rounded-full", DOT[check.status])} />
+          {check.label}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-xs">
+        <p className="text-xs">{check.detail}</p>
+        {check.hint ? <p className="mt-1 text-xs opacity-80">{check.hint}</p> : null}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
-/** Diagnose van klantenlogin en mailverzending, met de nodige redirect-URI's. */
+/** Compacte diagnose van klantenlogin en mailverzending. */
 export function LoginMailDiagnostics() {
   const run = useServerFn(diagnoseLoginAndMail);
   const { data, isLoading, error } = useQuery({
@@ -44,48 +58,81 @@ export function LoginMailDiagnostics() {
     retry: false,
   });
 
+  const problems = (data?.checks ?? []).filter((c) => c.status !== "ok");
+
   return (
     <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
-      <div className="flex items-center gap-2">
-        <Stethoscope className="size-4 text-muted-foreground" />
-        <h2 className="text-sm font-bold">Inloggen &amp; mail — diagnose</h2>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <div className="flex items-center gap-2">
+          <Stethoscope className="size-4 text-muted-foreground" />
+          <h2 className="text-sm font-bold">Diagnose</h2>
+        </div>
+        {isLoading ? (
+          <span className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Loader2 className="size-3.5 animate-spin" /> Controleren…
+          </span>
+        ) : null}
+        {data?.checks.map((check) => <StatusBadge key={check.id} check={check} />)}
       </div>
 
-      {isLoading ? <p className="mt-3 text-sm text-muted-foreground">Controleren…</p> : null}
-      {error ? (
-        <p className="mt-3 text-sm text-destructive">{(error as Error).message}</p>
+      {error ? <p className="mt-3 text-sm text-destructive">{(error as Error).message}</p> : null}
+
+      {problems.length ? (
+        <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
+          {problems.map((c) => (
+            <li key={c.id} className="break-words">
+              <span className="font-semibold text-foreground">{c.label}:</span> {c.detail}
+            </li>
+          ))}
+        </ul>
       ) : null}
 
-      {data ? (
-        <>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {data.checks.map((check) => (
-              <CheckRow key={check.id} check={check} />
-            ))}
-          </ul>
-
-          <div className="mt-4 grid gap-3 text-xs sm:grid-cols-2">
+      <Accordion type="single" collapsible className="mt-3">
+        <AccordionItem value="setup" className="border-b-0">
+          <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline">
+            🔧 Setup instructies &amp; redirect-URI&apos;s
+          </AccordionTrigger>
+          <AccordionContent className="space-y-4 text-xs">
             <div>
-              <p className="font-semibold">Redirect-URI's bij Google / GitHub / GitLab</p>
+              <p className="font-semibold">Redirect-URI in de Google- / GitHub-console</p>
+              <p className="mt-1 text-muted-foreground">
+                Neon Auth vangt de terugkeer op — zet in de provider dus het Neon-adres, niet dat
+                van de website:
+              </p>
               <ul className="mt-1 space-y-1 font-mono break-all text-muted-foreground">
-                {data.redirectUris.map((u) => (
-                  <li key={u}>{u}</li>
-                ))}
+                {(data?.redirectUris ?? []).map((u) => <li key={u}>{u}</li>)}
+              </ul>
+              <p className="mt-1 break-all text-muted-foreground">
+                Patroon:{" "}
+                <code className="rounded bg-muted px-1">
+                  {(data?.authUrl || "https://…neonauth…/neondb/auth") + "/callback/{provider}"}
+                </code>
+              </p>
+            </div>
+            <div>
+              <p className="font-semibold">Toegestane origins (Trusted Origins) in Neon Auth</p>
+              <p className="mt-1 text-muted-foreground">
+                Moet minstens <strong>https://maximilien.brussels</strong> en{" "}
+                <strong>https://maximilien.site</strong> bevatten, anders weigert Neon Auth de
+                aanmelding.
+              </p>
+              <ul className="mt-1 space-y-1 font-mono break-all text-muted-foreground">
+                {(data?.origins ?? []).map((o) => <li key={o}>{o}</li>)}
               </ul>
             </div>
             <div>
-              <p className="font-semibold">Toegestane origins in Neon Auth</p>
-              <ul className="mt-1 space-y-1 font-mono break-all text-muted-foreground">
-                {data.origins.map((o) => (
-                  <li key={o}>{o}</li>
-                ))}
-              </ul>
+              <p className="font-semibold">Mailverzending</p>
+              <p className="mt-1 text-muted-foreground">
+                Alle transactionele mail loopt via de Brevo HTTP-API (sleutel{" "}
+                <code className="rounded bg-muted px-1">xkeysib-…</code>). Er is geen SMTP-terugval
+                meer. Het afzenderdomein (noreply@maximilien.site) moet in Brevo geverifieerd zijn
+                met SPF en DKIM.
+              </p>
             </div>
-          </div>
-        </>
-      ) : null}
-
-      <MissingTranslationsReport />
+            <MissingTranslationsReport />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </section>
   );
 }
@@ -110,13 +157,9 @@ function MissingTranslationsReport() {
   ];
 
   return (
-    <div className="mt-4 border-t border-border pt-4">
-      <p className="text-sm font-bold">Ontbrekende vertalingen (deze sessie)</p>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Sleutels die niet gevonden werden in de aangeklikte taal en teruggevallen zijn op Engels
-        of Nederlands.
-      </p>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+    <div className="border-t border-border pt-3">
+      <p className="font-semibold">Ontbrekende vertalingen (deze sessie)</p>
+      <div className="mt-2 grid gap-3 sm:grid-cols-2">
         {(
           [
             { label: "Publieke site", data: site },
@@ -124,8 +167,8 @@ function MissingTranslationsReport() {
           ] as const
         ).map((group) => (
           <div key={group.label} className="rounded-lg border border-border/70 p-3">
-            <p className="text-xs font-semibold">{group.label}</p>
-            <ul className="mt-2 space-y-1.5 text-xs">
+            <p className="font-semibold">{group.label}</p>
+            <ul className="mt-2 space-y-1.5">
               {langs.map((l) => {
                 const keys = group.data[l.key];
                 return (
