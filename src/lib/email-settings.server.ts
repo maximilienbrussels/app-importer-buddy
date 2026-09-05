@@ -255,6 +255,39 @@ export async function getSubmission(id: string): Promise<FormSubmission | null> 
   };
 }
 
+/** Corrigeert het adres van de inzender (bv. een tikfout) voor een herverzending. */
+export async function updateSubmissionEmail(id: string, email: string): Promise<boolean> {
+  const ready = await ensureEmailTables();
+  if (!ready) return false;
+  const { db } = await import("./neon.server");
+  await db()`update form_submissions set email = ${email}, updated_at = now() where id = ${id}`;
+  return true;
+}
+
+/** Verwijdert één inzending definitief uit het logboek. */
+export async function deleteSubmission(id: string): Promise<boolean> {
+  const ready = await ensureEmailTables();
+  if (!ready) return false;
+  const { db } = await import("./neon.server");
+  await db()`delete from form_submissions where id = ${id}`;
+  return true;
+}
+
+/** Ruimt in één keer alle mislukte óf alle verstuurde rijen op. */
+export async function cleanupSubmissions(scope: "failed" | "sent"): Promise<number> {
+  const ready = await ensureEmailTables();
+  if (!ready) return 0;
+  const { db } = await import("./neon.server");
+  const statuses =
+    scope === "failed"
+      ? ["failed", "email_failed"]
+      : ["sent", "sent_brevo", "sent_smtp_fallback", "fallback_used"];
+  const rows = (await db()`
+    delete from form_submissions where status = any(${statuses}) returning id
+  `) as Array<{ id: string }>;
+  return rows.length;
+}
+
 export type DeliveryOutcome = {
   status: SubmissionStatus;
   recipients: string[];
