@@ -101,6 +101,8 @@ type StatusResponse = {
 
 export function SponsorPage() {
   const { lang } = useT();
+  const albumPhotos = useAlbumPhotos();
+
   const c = COPY[lang];
   const { data: animals } = useSuspenseQuery(animalsQO);
 
