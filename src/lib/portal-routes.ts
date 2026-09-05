@@ -4,7 +4,7 @@ export const LANGS: Lang[] = ["fr", "nl", "en"];
 
 export type PortalPage =
     | "today" | "requests" | "calendar" | "services" | "shop" | "academy" | "social" | "team"
-  | "email" | "site" | "log" | "api" | "copilot" | "albums";
+  | "email" | "site" | "log" | "api" | "copilot" | "albums" | "residents";
 
 export const PORTAL_PAGES: PortalPage[] = [
   "today",
@@ -15,6 +15,7 @@ export const PORTAL_PAGES: PortalPage[] = [
   "academy",
   "social",
   "albums",
+  "residents",
   "team",
   "email",
   "site",
@@ -34,6 +35,7 @@ export const SLUGS: Record<Lang, Record<PortalPage, string>> = {
     academy: "academies",
     social: "sociaal",
     albums: "fotoalbums",
+    residents: "bewoners",
     team: "team",
     email: "e-mail",
     site: "site",
@@ -50,6 +52,7 @@ export const SLUGS: Record<Lang, Record<PortalPage, string>> = {
     academy: "academies",
     social: "social",
     albums: "albums-photos",
+    residents: "residents",
     team: "equipe",
     email: "e-mail",
     site: "site",
@@ -66,6 +69,7 @@ export const SLUGS: Record<Lang, Record<PortalPage, string>> = {
     academy: "academies",
     social: "social",
     albums: "photo-albums",
+    residents: "residents",
     team: "team",
     email: "email",
     site: "site",
@@ -131,6 +135,11 @@ export const PAGE_META: Record<PortalPage, { title: string; description: string 
     title: "Fotoalbums — Beheerportaal Ferme du Parc",
     description:
       "Voeg foto's toe per thema of per dier, pas de volgorde en bijschriften aan, en verwijder beelden uit de opslag.",
+  },
+  residents: {
+    title: "Bewoners & dieren — Beheerportaal Ferme du Parc",
+    description:
+      "Beheer de dieren van de boerderij: naam, soort, verhaaltje en profielfoto voor 'De bewoners' op de site.",
   },
   team: {
     title: "Teambeheer — Beheerportaal Ferme du Parc",
