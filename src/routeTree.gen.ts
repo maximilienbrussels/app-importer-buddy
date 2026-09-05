@@ -92,6 +92,7 @@ import { Route as ApiDevRunMigrationsRouteImport } from './routes/api/dev/run-mi
 import { Route as ApiEmailSendTransactionalRouteImport } from './routes/api/email/send-transactional'
 import { Route as ApiEmailTestTemplatesRouteImport } from './routes/api/email/test-templates'
 import { Route as ApiInfomaniakStatusRouteImport } from './routes/api/infomaniak/status'
+import { Route as ApiInfomaniakSyncRouteImport } from './routes/api/infomaniak/sync'
 import { Route as ApiPaymentsCreateSessionRouteImport } from './routes/api/payments/create-session'
 import { Route as ApiPaymentsOrderSessionRouteImport } from './routes/api/payments/order-session'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
@@ -541,6 +542,11 @@ const ApiInfomaniakStatusRoute = ApiInfomaniakStatusRouteImport.update({
   path: '/api/infomaniak/status',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiInfomaniakSyncRoute = ApiInfomaniakSyncRouteImport.update({
+  id: '/api/infomaniak/sync',
+  path: '/api/infomaniak/sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPaymentsCreateSessionRoute =
   ApiPaymentsCreateSessionRouteImport.update({
     id: '/api/payments/create-session',
@@ -776,6 +782,7 @@ export interface FileRoutesByFullPath {
   '/api/email/send-transactional': typeof ApiEmailSendTransactionalRoute
   '/api/email/test-templates': typeof ApiEmailTestTemplatesRoute
   '/api/infomaniak/status': typeof ApiInfomaniakStatusRoute
+  '/api/infomaniak/sync': typeof ApiInfomaniakSyncRoute
   '/api/payments/create-session': typeof ApiPaymentsCreateSessionRoute
   '/api/payments/order-session': typeof ApiPaymentsOrderSessionRoute
   '/api/public/health': typeof ApiPublicHealthRoute
@@ -887,6 +894,7 @@ export interface FileRoutesByTo {
   '/api/email/send-transactional': typeof ApiEmailSendTransactionalRoute
   '/api/email/test-templates': typeof ApiEmailTestTemplatesRoute
   '/api/infomaniak/status': typeof ApiInfomaniakStatusRoute
+  '/api/infomaniak/sync': typeof ApiInfomaniakSyncRoute
   '/api/payments/create-session': typeof ApiPaymentsCreateSessionRoute
   '/api/payments/order-session': typeof ApiPaymentsOrderSessionRoute
   '/api/public/health': typeof ApiPublicHealthRoute
@@ -1002,6 +1010,7 @@ export interface FileRoutesById {
   '/api/email/send-transactional': typeof ApiEmailSendTransactionalRoute
   '/api/email/test-templates': typeof ApiEmailTestTemplatesRoute
   '/api/infomaniak/status': typeof ApiInfomaniakStatusRoute
+  '/api/infomaniak/sync': typeof ApiInfomaniakSyncRoute
   '/api/payments/create-session': typeof ApiPaymentsCreateSessionRoute
   '/api/payments/order-session': typeof ApiPaymentsOrderSessionRoute
   '/api/public/health': typeof ApiPublicHealthRoute
@@ -1117,6 +1126,7 @@ export interface FileRouteTypes {
     | '/api/email/send-transactional'
     | '/api/email/test-templates'
     | '/api/infomaniak/status'
+    | '/api/infomaniak/sync'
     | '/api/payments/create-session'
     | '/api/payments/order-session'
     | '/api/public/health'
@@ -1228,6 +1238,7 @@ export interface FileRouteTypes {
     | '/api/email/send-transactional'
     | '/api/email/test-templates'
     | '/api/infomaniak/status'
+    | '/api/infomaniak/sync'
     | '/api/payments/create-session'
     | '/api/payments/order-session'
     | '/api/public/health'
@@ -1342,6 +1353,7 @@ export interface FileRouteTypes {
     | '/api/email/send-transactional'
     | '/api/email/test-templates'
     | '/api/infomaniak/status'
+    | '/api/infomaniak/sync'
     | '/api/payments/create-session'
     | '/api/payments/order-session'
     | '/api/public/health'
@@ -1445,6 +1457,7 @@ export interface RootRouteChildren {
   ApiEmailSendTransactionalRoute: typeof ApiEmailSendTransactionalRoute
   ApiEmailTestTemplatesRoute: typeof ApiEmailTestTemplatesRoute
   ApiInfomaniakStatusRoute: typeof ApiInfomaniakStatusRoute
+  ApiInfomaniakSyncRoute: typeof ApiInfomaniakSyncRoute
   ApiPaymentsCreateSessionRoute: typeof ApiPaymentsCreateSessionRoute
   ApiPaymentsOrderSessionRoute: typeof ApiPaymentsOrderSessionRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
@@ -2055,6 +2068,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiInfomaniakStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/infomaniak/sync': {
+      id: '/api/infomaniak/sync'
+      path: '/api/infomaniak/sync'
+      fullPath: '/api/infomaniak/sync'
+      preLoaderRoute: typeof ApiInfomaniakSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/payments/create-session': {
       id: '/api/payments/create-session'
       path: '/api/payments/create-session'
@@ -2420,6 +2440,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiEmailSendTransactionalRoute: ApiEmailSendTransactionalRoute,
   ApiEmailTestTemplatesRoute: ApiEmailTestTemplatesRoute,
   ApiInfomaniakStatusRoute: ApiInfomaniakStatusRoute,
+  ApiInfomaniakSyncRoute: ApiInfomaniakSyncRoute,
   ApiPaymentsCreateSessionRoute: ApiPaymentsCreateSessionRoute,
   ApiPaymentsOrderSessionRoute: ApiPaymentsOrderSessionRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
