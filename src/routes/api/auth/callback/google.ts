@@ -59,6 +59,12 @@ export const Route = createFileRoute("/api/auth/callback/google")({
           const { user, role } = await mod.upsertGoogleUser(profile);
           const effectiveRole = await mod.resolveRole(user.email, role);
 
+          // Tokens (versleuteld) bewaren zodat synchronisatie later blijft werken.
+          const sync = await import("@/lib/google-sync.server");
+          await sync.saveGoogleTokens(user.id, profile.tokens).catch((error: unknown) => {
+            console.error("[google-oauth] tokens bewaren mislukt:", error);
+          });
+
           const auth = await import("@/lib/local-auth.server");
           const sessionToken = await auth.signSession(user);
 

@@ -18,6 +18,7 @@ export const Route = createFileRoute("/api/auth/google")({
           cookieHeader,
           OAUTH_STATE_COOKIE,
           GOOGLE_AUTH_ENDPOINT,
+          GOOGLE_SCOPES,
         } = await import("@/lib/google-oauth.server");
 
         const { logAuthConfig, loginErrorUrl } = await import("@/lib/auth-config");
@@ -45,10 +46,13 @@ export const Route = createFileRoute("/api/auth/google")({
         authUrl.searchParams.set("client_id", creds.clientId);
         authUrl.searchParams.set("redirect_uri", redirectUri(request));
         authUrl.searchParams.set("response_type", "code");
-        authUrl.searchParams.set("scope", "openid email profile");
+        authUrl.searchParams.set("scope", GOOGLE_SCOPES);
         authUrl.searchParams.set("state", state);
-        authUrl.searchParams.set("prompt", "select_account");
-        authUrl.searchParams.set("access_type", "online");
+        // Offline + consent: alleen zo geeft Google een refresh_token terug,
+        // dat we nodig hebben om de agenda te blijven synchroniseren.
+        authUrl.searchParams.set("prompt", "consent select_account");
+        authUrl.searchParams.set("access_type", "offline");
+        authUrl.searchParams.set("include_granted_scopes", "true");
 
         return new Response(null, {
           status: 302,

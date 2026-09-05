@@ -91,6 +91,10 @@ import { Route as ApiDevHealthRouteImport } from './routes/api/dev/health'
 import { Route as ApiDevRunMigrationsRouteImport } from './routes/api/dev/run-migrations'
 import { Route as ApiEmailSendTransactionalRouteImport } from './routes/api/email/send-transactional'
 import { Route as ApiEmailTestTemplatesRouteImport } from './routes/api/email/test-templates'
+import { Route as ApiGoogleStatusRouteImport } from './routes/api/google/status'
+import { Route as ApiGoogleSyncRouteImport } from './routes/api/google/sync'
+import { Route as ApiInfomaniakStatusRouteImport } from './routes/api/infomaniak/status'
+import { Route as ApiInfomaniakSyncRouteImport } from './routes/api/infomaniak/sync'
 import { Route as ApiPaymentsCreateSessionRouteImport } from './routes/api/payments/create-session'
 import { Route as ApiPaymentsOrderSessionRouteImport } from './routes/api/payments/order-session'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
@@ -110,6 +114,10 @@ import { Route as ApiAdminCoPilotUndoRouteImport } from './routes/api/admin/co-p
 import { Route as ApiAuthCallbackGithubRouteImport } from './routes/api/auth/callback/github'
 import { Route as ApiAuthCallbackGoogleRouteImport } from './routes/api/auth/callback/google'
 import { Route as ApiAuthCallbackMastodonRouteImport } from './routes/api/auth/callback/mastodon'
+import { Route as ApiMediaScalewayDeleteRouteImport } from './routes/api/media/scaleway/delete'
+import { Route as ApiMediaScalewayListRouteImport } from './routes/api/media/scaleway/list'
+import { Route as ApiMediaScalewaySimilarRouteImport } from './routes/api/media/scaleway/similar'
+import { Route as ApiMediaScalewayUploadRouteImport } from './routes/api/media/scaleway/upload'
 import { Route as ApiPublicCalendarFeedRouteImport } from './routes/api/public/calendar/feed'
 import { Route as ApiPublicMediaIdRouteImport } from './routes/api/public/media/$id'
 import { Route as ApiPublicPickupPassRouteImport } from './routes/api/public/pickup/pass'
@@ -535,6 +543,26 @@ const ApiEmailTestTemplatesRoute = ApiEmailTestTemplatesRouteImport.update({
   path: '/api/email/test-templates',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiGoogleStatusRoute = ApiGoogleStatusRouteImport.update({
+  id: '/api/google/status',
+  path: '/api/google/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGoogleSyncRoute = ApiGoogleSyncRouteImport.update({
+  id: '/api/google/sync',
+  path: '/api/google/sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInfomaniakStatusRoute = ApiInfomaniakStatusRouteImport.update({
+  id: '/api/infomaniak/status',
+  path: '/api/infomaniak/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInfomaniakSyncRoute = ApiInfomaniakSyncRouteImport.update({
+  id: '/api/infomaniak/sync',
+  path: '/api/infomaniak/sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPaymentsCreateSessionRoute =
   ApiPaymentsCreateSessionRouteImport.update({
     id: '/api/payments/create-session',
@@ -633,6 +661,26 @@ const ApiAuthCallbackGoogleRoute = ApiAuthCallbackGoogleRouteImport.update({
 const ApiAuthCallbackMastodonRoute = ApiAuthCallbackMastodonRouteImport.update({
   id: '/api/auth/callback/mastodon',
   path: '/api/auth/callback/mastodon',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMediaScalewayDeleteRoute = ApiMediaScalewayDeleteRouteImport.update({
+  id: '/api/media/scaleway/delete',
+  path: '/api/media/scaleway/delete',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMediaScalewayListRoute = ApiMediaScalewayListRouteImport.update({
+  id: '/api/media/scaleway/list',
+  path: '/api/media/scaleway/list',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMediaScalewaySimilarRoute = ApiMediaScalewaySimilarRouteImport.update({
+  id: '/api/media/scaleway/similar',
+  path: '/api/media/scaleway/similar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMediaScalewayUploadRoute = ApiMediaScalewayUploadRouteImport.update({
+  id: '/api/media/scaleway/upload',
+  path: '/api/media/scaleway/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicCalendarFeedRoute = ApiPublicCalendarFeedRouteImport.update({
@@ -769,6 +817,10 @@ export interface FileRoutesByFullPath {
   '/api/dev/run-migrations': typeof ApiDevRunMigrationsRoute
   '/api/email/send-transactional': typeof ApiEmailSendTransactionalRoute
   '/api/email/test-templates': typeof ApiEmailTestTemplatesRoute
+  '/api/google/status': typeof ApiGoogleStatusRoute
+  '/api/google/sync': typeof ApiGoogleSyncRoute
+  '/api/infomaniak/status': typeof ApiInfomaniakStatusRoute
+  '/api/infomaniak/sync': typeof ApiInfomaniakSyncRoute
   '/api/payments/create-session': typeof ApiPaymentsCreateSessionRoute
   '/api/payments/order-session': typeof ApiPaymentsOrderSessionRoute
   '/api/public/health': typeof ApiPublicHealthRoute
@@ -788,6 +840,10 @@ export interface FileRoutesByFullPath {
   '/api/auth/callback/github': typeof ApiAuthCallbackGithubRoute
   '/api/auth/callback/google': typeof ApiAuthCallbackGoogleRoute
   '/api/auth/callback/mastodon': typeof ApiAuthCallbackMastodonRoute
+  '/api/media/scaleway/delete': typeof ApiMediaScalewayDeleteRoute
+  '/api/media/scaleway/list': typeof ApiMediaScalewayListRoute
+  '/api/media/scaleway/similar': typeof ApiMediaScalewaySimilarRoute
+  '/api/media/scaleway/upload': typeof ApiMediaScalewayUploadRoute
   '/api/public/calendar/feed': typeof ApiPublicCalendarFeedRoute
   '/api/public/media/$id': typeof ApiPublicMediaIdRoute
   '/api/public/pickup/pass': typeof ApiPublicPickupPassRoute
@@ -879,6 +935,10 @@ export interface FileRoutesByTo {
   '/api/dev/run-migrations': typeof ApiDevRunMigrationsRoute
   '/api/email/send-transactional': typeof ApiEmailSendTransactionalRoute
   '/api/email/test-templates': typeof ApiEmailTestTemplatesRoute
+  '/api/google/status': typeof ApiGoogleStatusRoute
+  '/api/google/sync': typeof ApiGoogleSyncRoute
+  '/api/infomaniak/status': typeof ApiInfomaniakStatusRoute
+  '/api/infomaniak/sync': typeof ApiInfomaniakSyncRoute
   '/api/payments/create-session': typeof ApiPaymentsCreateSessionRoute
   '/api/payments/order-session': typeof ApiPaymentsOrderSessionRoute
   '/api/public/health': typeof ApiPublicHealthRoute
@@ -898,6 +958,10 @@ export interface FileRoutesByTo {
   '/api/auth/callback/github': typeof ApiAuthCallbackGithubRoute
   '/api/auth/callback/google': typeof ApiAuthCallbackGoogleRoute
   '/api/auth/callback/mastodon': typeof ApiAuthCallbackMastodonRoute
+  '/api/media/scaleway/delete': typeof ApiMediaScalewayDeleteRoute
+  '/api/media/scaleway/list': typeof ApiMediaScalewayListRoute
+  '/api/media/scaleway/similar': typeof ApiMediaScalewaySimilarRoute
+  '/api/media/scaleway/upload': typeof ApiMediaScalewayUploadRoute
   '/api/public/calendar/feed': typeof ApiPublicCalendarFeedRoute
   '/api/public/media/$id': typeof ApiPublicMediaIdRoute
   '/api/public/pickup/pass': typeof ApiPublicPickupPassRoute
@@ -993,6 +1057,10 @@ export interface FileRoutesById {
   '/api/dev/run-migrations': typeof ApiDevRunMigrationsRoute
   '/api/email/send-transactional': typeof ApiEmailSendTransactionalRoute
   '/api/email/test-templates': typeof ApiEmailTestTemplatesRoute
+  '/api/google/status': typeof ApiGoogleStatusRoute
+  '/api/google/sync': typeof ApiGoogleSyncRoute
+  '/api/infomaniak/status': typeof ApiInfomaniakStatusRoute
+  '/api/infomaniak/sync': typeof ApiInfomaniakSyncRoute
   '/api/payments/create-session': typeof ApiPaymentsCreateSessionRoute
   '/api/payments/order-session': typeof ApiPaymentsOrderSessionRoute
   '/api/public/health': typeof ApiPublicHealthRoute
@@ -1012,6 +1080,10 @@ export interface FileRoutesById {
   '/api/auth/callback/github': typeof ApiAuthCallbackGithubRoute
   '/api/auth/callback/google': typeof ApiAuthCallbackGoogleRoute
   '/api/auth/callback/mastodon': typeof ApiAuthCallbackMastodonRoute
+  '/api/media/scaleway/delete': typeof ApiMediaScalewayDeleteRoute
+  '/api/media/scaleway/list': typeof ApiMediaScalewayListRoute
+  '/api/media/scaleway/similar': typeof ApiMediaScalewaySimilarRoute
+  '/api/media/scaleway/upload': typeof ApiMediaScalewayUploadRoute
   '/api/public/calendar/feed': typeof ApiPublicCalendarFeedRoute
   '/api/public/media/$id': typeof ApiPublicMediaIdRoute
   '/api/public/pickup/pass': typeof ApiPublicPickupPassRoute
@@ -1107,6 +1179,10 @@ export interface FileRouteTypes {
     | '/api/dev/run-migrations'
     | '/api/email/send-transactional'
     | '/api/email/test-templates'
+    | '/api/google/status'
+    | '/api/google/sync'
+    | '/api/infomaniak/status'
+    | '/api/infomaniak/sync'
     | '/api/payments/create-session'
     | '/api/payments/order-session'
     | '/api/public/health'
@@ -1126,6 +1202,10 @@ export interface FileRouteTypes {
     | '/api/auth/callback/github'
     | '/api/auth/callback/google'
     | '/api/auth/callback/mastodon'
+    | '/api/media/scaleway/delete'
+    | '/api/media/scaleway/list'
+    | '/api/media/scaleway/similar'
+    | '/api/media/scaleway/upload'
     | '/api/public/calendar/feed'
     | '/api/public/media/$id'
     | '/api/public/pickup/pass'
@@ -1217,6 +1297,10 @@ export interface FileRouteTypes {
     | '/api/dev/run-migrations'
     | '/api/email/send-transactional'
     | '/api/email/test-templates'
+    | '/api/google/status'
+    | '/api/google/sync'
+    | '/api/infomaniak/status'
+    | '/api/infomaniak/sync'
     | '/api/payments/create-session'
     | '/api/payments/order-session'
     | '/api/public/health'
@@ -1236,6 +1320,10 @@ export interface FileRouteTypes {
     | '/api/auth/callback/github'
     | '/api/auth/callback/google'
     | '/api/auth/callback/mastodon'
+    | '/api/media/scaleway/delete'
+    | '/api/media/scaleway/list'
+    | '/api/media/scaleway/similar'
+    | '/api/media/scaleway/upload'
     | '/api/public/calendar/feed'
     | '/api/public/media/$id'
     | '/api/public/pickup/pass'
@@ -1330,6 +1418,10 @@ export interface FileRouteTypes {
     | '/api/dev/run-migrations'
     | '/api/email/send-transactional'
     | '/api/email/test-templates'
+    | '/api/google/status'
+    | '/api/google/sync'
+    | '/api/infomaniak/status'
+    | '/api/infomaniak/sync'
     | '/api/payments/create-session'
     | '/api/payments/order-session'
     | '/api/public/health'
@@ -1349,6 +1441,10 @@ export interface FileRouteTypes {
     | '/api/auth/callback/github'
     | '/api/auth/callback/google'
     | '/api/auth/callback/mastodon'
+    | '/api/media/scaleway/delete'
+    | '/api/media/scaleway/list'
+    | '/api/media/scaleway/similar'
+    | '/api/media/scaleway/upload'
     | '/api/public/calendar/feed'
     | '/api/public/media/$id'
     | '/api/public/pickup/pass'
@@ -1432,6 +1528,10 @@ export interface RootRouteChildren {
   ApiDevRunMigrationsRoute: typeof ApiDevRunMigrationsRoute
   ApiEmailSendTransactionalRoute: typeof ApiEmailSendTransactionalRoute
   ApiEmailTestTemplatesRoute: typeof ApiEmailTestTemplatesRoute
+  ApiGoogleStatusRoute: typeof ApiGoogleStatusRoute
+  ApiGoogleSyncRoute: typeof ApiGoogleSyncRoute
+  ApiInfomaniakStatusRoute: typeof ApiInfomaniakStatusRoute
+  ApiInfomaniakSyncRoute: typeof ApiInfomaniakSyncRoute
   ApiPaymentsCreateSessionRoute: typeof ApiPaymentsCreateSessionRoute
   ApiPaymentsOrderSessionRoute: typeof ApiPaymentsOrderSessionRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
@@ -1449,6 +1549,10 @@ export interface RootRouteChildren {
   ApiAuthCallbackGithubRoute: typeof ApiAuthCallbackGithubRoute
   ApiAuthCallbackGoogleRoute: typeof ApiAuthCallbackGoogleRoute
   ApiAuthCallbackMastodonRoute: typeof ApiAuthCallbackMastodonRoute
+  ApiMediaScalewayDeleteRoute: typeof ApiMediaScalewayDeleteRoute
+  ApiMediaScalewayListRoute: typeof ApiMediaScalewayListRoute
+  ApiMediaScalewaySimilarRoute: typeof ApiMediaScalewaySimilarRoute
+  ApiMediaScalewayUploadRoute: typeof ApiMediaScalewayUploadRoute
   ApiPublicCalendarFeedRoute: typeof ApiPublicCalendarFeedRoute
   ApiPublicMediaIdRoute: typeof ApiPublicMediaIdRoute
   ApiPublicPickupPassRoute: typeof ApiPublicPickupPassRoute
@@ -2035,6 +2139,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiEmailTestTemplatesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/google/status': {
+      id: '/api/google/status'
+      path: '/api/google/status'
+      fullPath: '/api/google/status'
+      preLoaderRoute: typeof ApiGoogleStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/google/sync': {
+      id: '/api/google/sync'
+      path: '/api/google/sync'
+      fullPath: '/api/google/sync'
+      preLoaderRoute: typeof ApiGoogleSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/infomaniak/status': {
+      id: '/api/infomaniak/status'
+      path: '/api/infomaniak/status'
+      fullPath: '/api/infomaniak/status'
+      preLoaderRoute: typeof ApiInfomaniakStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/infomaniak/sync': {
+      id: '/api/infomaniak/sync'
+      path: '/api/infomaniak/sync'
+      fullPath: '/api/infomaniak/sync'
+      preLoaderRoute: typeof ApiInfomaniakSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/payments/create-session': {
       id: '/api/payments/create-session'
       path: '/api/payments/create-session'
@@ -2166,6 +2298,34 @@ declare module '@tanstack/react-router' {
       path: '/api/auth/callback/mastodon'
       fullPath: '/api/auth/callback/mastodon'
       preLoaderRoute: typeof ApiAuthCallbackMastodonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/media/scaleway/delete': {
+      id: '/api/media/scaleway/delete'
+      path: '/api/media/scaleway/delete'
+      fullPath: '/api/media/scaleway/delete'
+      preLoaderRoute: typeof ApiMediaScalewayDeleteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/media/scaleway/list': {
+      id: '/api/media/scaleway/list'
+      path: '/api/media/scaleway/list'
+      fullPath: '/api/media/scaleway/list'
+      preLoaderRoute: typeof ApiMediaScalewayListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/media/scaleway/similar': {
+      id: '/api/media/scaleway/similar'
+      path: '/api/media/scaleway/similar'
+      fullPath: '/api/media/scaleway/similar'
+      preLoaderRoute: typeof ApiMediaScalewaySimilarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/media/scaleway/upload': {
+      id: '/api/media/scaleway/upload'
+      path: '/api/media/scaleway/upload'
+      fullPath: '/api/media/scaleway/upload'
+      preLoaderRoute: typeof ApiMediaScalewayUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/calendar/feed': {
@@ -2399,6 +2559,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDevRunMigrationsRoute: ApiDevRunMigrationsRoute,
   ApiEmailSendTransactionalRoute: ApiEmailSendTransactionalRoute,
   ApiEmailTestTemplatesRoute: ApiEmailTestTemplatesRoute,
+  ApiGoogleStatusRoute: ApiGoogleStatusRoute,
+  ApiGoogleSyncRoute: ApiGoogleSyncRoute,
+  ApiInfomaniakStatusRoute: ApiInfomaniakStatusRoute,
+  ApiInfomaniakSyncRoute: ApiInfomaniakSyncRoute,
   ApiPaymentsCreateSessionRoute: ApiPaymentsCreateSessionRoute,
   ApiPaymentsOrderSessionRoute: ApiPaymentsOrderSessionRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
@@ -2416,6 +2580,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthCallbackGithubRoute: ApiAuthCallbackGithubRoute,
   ApiAuthCallbackGoogleRoute: ApiAuthCallbackGoogleRoute,
   ApiAuthCallbackMastodonRoute: ApiAuthCallbackMastodonRoute,
+  ApiMediaScalewayDeleteRoute: ApiMediaScalewayDeleteRoute,
+  ApiMediaScalewayListRoute: ApiMediaScalewayListRoute,
+  ApiMediaScalewaySimilarRoute: ApiMediaScalewaySimilarRoute,
+  ApiMediaScalewayUploadRoute: ApiMediaScalewayUploadRoute,
   ApiPublicCalendarFeedRoute: ApiPublicCalendarFeedRoute,
   ApiPublicMediaIdRoute: ApiPublicMediaIdRoute,
   ApiPublicPickupPassRoute: ApiPublicPickupPassRoute,
