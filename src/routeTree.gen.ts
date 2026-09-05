@@ -91,6 +91,8 @@ import { Route as ApiDevHealthRouteImport } from './routes/api/dev/health'
 import { Route as ApiDevRunMigrationsRouteImport } from './routes/api/dev/run-migrations'
 import { Route as ApiEmailSendTransactionalRouteImport } from './routes/api/email/send-transactional'
 import { Route as ApiEmailTestTemplatesRouteImport } from './routes/api/email/test-templates'
+import { Route as ApiGoogleStatusRouteImport } from './routes/api/google/status'
+import { Route as ApiGoogleSyncRouteImport } from './routes/api/google/sync'
 import { Route as ApiInfomaniakStatusRouteImport } from './routes/api/infomaniak/status'
 import { Route as ApiInfomaniakSyncRouteImport } from './routes/api/infomaniak/sync'
 import { Route as ApiPaymentsCreateSessionRouteImport } from './routes/api/payments/create-session'
@@ -537,6 +539,16 @@ const ApiEmailTestTemplatesRoute = ApiEmailTestTemplatesRouteImport.update({
   path: '/api/email/test-templates',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiGoogleStatusRoute = ApiGoogleStatusRouteImport.update({
+  id: '/api/google/status',
+  path: '/api/google/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGoogleSyncRoute = ApiGoogleSyncRouteImport.update({
+  id: '/api/google/sync',
+  path: '/api/google/sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiInfomaniakStatusRoute = ApiInfomaniakStatusRouteImport.update({
   id: '/api/infomaniak/status',
   path: '/api/infomaniak/status',
@@ -781,6 +793,8 @@ export interface FileRoutesByFullPath {
   '/api/dev/run-migrations': typeof ApiDevRunMigrationsRoute
   '/api/email/send-transactional': typeof ApiEmailSendTransactionalRoute
   '/api/email/test-templates': typeof ApiEmailTestTemplatesRoute
+  '/api/google/status': typeof ApiGoogleStatusRoute
+  '/api/google/sync': typeof ApiGoogleSyncRoute
   '/api/infomaniak/status': typeof ApiInfomaniakStatusRoute
   '/api/infomaniak/sync': typeof ApiInfomaniakSyncRoute
   '/api/payments/create-session': typeof ApiPaymentsCreateSessionRoute
@@ -893,6 +907,8 @@ export interface FileRoutesByTo {
   '/api/dev/run-migrations': typeof ApiDevRunMigrationsRoute
   '/api/email/send-transactional': typeof ApiEmailSendTransactionalRoute
   '/api/email/test-templates': typeof ApiEmailTestTemplatesRoute
+  '/api/google/status': typeof ApiGoogleStatusRoute
+  '/api/google/sync': typeof ApiGoogleSyncRoute
   '/api/infomaniak/status': typeof ApiInfomaniakStatusRoute
   '/api/infomaniak/sync': typeof ApiInfomaniakSyncRoute
   '/api/payments/create-session': typeof ApiPaymentsCreateSessionRoute
@@ -1009,6 +1025,8 @@ export interface FileRoutesById {
   '/api/dev/run-migrations': typeof ApiDevRunMigrationsRoute
   '/api/email/send-transactional': typeof ApiEmailSendTransactionalRoute
   '/api/email/test-templates': typeof ApiEmailTestTemplatesRoute
+  '/api/google/status': typeof ApiGoogleStatusRoute
+  '/api/google/sync': typeof ApiGoogleSyncRoute
   '/api/infomaniak/status': typeof ApiInfomaniakStatusRoute
   '/api/infomaniak/sync': typeof ApiInfomaniakSyncRoute
   '/api/payments/create-session': typeof ApiPaymentsCreateSessionRoute
@@ -1125,6 +1143,8 @@ export interface FileRouteTypes {
     | '/api/dev/run-migrations'
     | '/api/email/send-transactional'
     | '/api/email/test-templates'
+    | '/api/google/status'
+    | '/api/google/sync'
     | '/api/infomaniak/status'
     | '/api/infomaniak/sync'
     | '/api/payments/create-session'
@@ -1237,6 +1257,8 @@ export interface FileRouteTypes {
     | '/api/dev/run-migrations'
     | '/api/email/send-transactional'
     | '/api/email/test-templates'
+    | '/api/google/status'
+    | '/api/google/sync'
     | '/api/infomaniak/status'
     | '/api/infomaniak/sync'
     | '/api/payments/create-session'
@@ -1352,6 +1374,8 @@ export interface FileRouteTypes {
     | '/api/dev/run-migrations'
     | '/api/email/send-transactional'
     | '/api/email/test-templates'
+    | '/api/google/status'
+    | '/api/google/sync'
     | '/api/infomaniak/status'
     | '/api/infomaniak/sync'
     | '/api/payments/create-session'
@@ -1456,6 +1480,8 @@ export interface RootRouteChildren {
   ApiDevRunMigrationsRoute: typeof ApiDevRunMigrationsRoute
   ApiEmailSendTransactionalRoute: typeof ApiEmailSendTransactionalRoute
   ApiEmailTestTemplatesRoute: typeof ApiEmailTestTemplatesRoute
+  ApiGoogleStatusRoute: typeof ApiGoogleStatusRoute
+  ApiGoogleSyncRoute: typeof ApiGoogleSyncRoute
   ApiInfomaniakStatusRoute: typeof ApiInfomaniakStatusRoute
   ApiInfomaniakSyncRoute: typeof ApiInfomaniakSyncRoute
   ApiPaymentsCreateSessionRoute: typeof ApiPaymentsCreateSessionRoute
@@ -2061,6 +2087,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiEmailTestTemplatesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/google/status': {
+      id: '/api/google/status'
+      path: '/api/google/status'
+      fullPath: '/api/google/status'
+      preLoaderRoute: typeof ApiGoogleStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/google/sync': {
+      id: '/api/google/sync'
+      path: '/api/google/sync'
+      fullPath: '/api/google/sync'
+      preLoaderRoute: typeof ApiGoogleSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/infomaniak/status': {
       id: '/api/infomaniak/status'
       path: '/api/infomaniak/status'
@@ -2439,6 +2479,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDevRunMigrationsRoute: ApiDevRunMigrationsRoute,
   ApiEmailSendTransactionalRoute: ApiEmailSendTransactionalRoute,
   ApiEmailTestTemplatesRoute: ApiEmailTestTemplatesRoute,
+  ApiGoogleStatusRoute: ApiGoogleStatusRoute,
+  ApiGoogleSyncRoute: ApiGoogleSyncRoute,
   ApiInfomaniakStatusRoute: ApiInfomaniakStatusRoute,
   ApiInfomaniakSyncRoute: ApiInfomaniakSyncRoute,
   ApiPaymentsCreateSessionRoute: ApiPaymentsCreateSessionRoute,
