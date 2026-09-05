@@ -3,7 +3,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { NavHeader } from "@/components/NavHeader";
 import { useT } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
-import { imageForSpecies } from "@/lib/animal-images";
+import { ResidentPhoto } from "@/components/ResidentPhoto";
+import { useAlbumPhotos } from "@/lib/use-album-photos";
 import { speciesIn } from "@/lib/routes-i18n";
 import { handleImageError } from "@/lib/image-fallback";
 import { animalsQO } from "@/pages/animals";
@@ -243,13 +244,13 @@ function SponsorForm({
                       : "border-border"
                   }`}
                 >
-                  <img
-                    onError={handleImageError}
-                    src={a.image_url || imageForSpecies(a.species) || undefined}
-                    alt={a.name}
-                    loading="lazy"
-                    className="aspect-[4/3] w-full object-cover object-[50%_35%]"
-                  />
+                  <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
+                    <ResidentPhoto
+                      animal={a}
+                      albums={albumPhotos}
+                      speciesLabel={speciesIn(a.species, lang)}
+                    />
+                  </div>
                   <div className="p-3">
                     <p className="font-serif text-lg text-foreground">
                       {a.name} de {speciesIn(a.species, lang)}

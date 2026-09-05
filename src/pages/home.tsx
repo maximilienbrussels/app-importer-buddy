@@ -7,7 +7,8 @@ import { LocalLink } from "@/components/LocalLink";
 import { pathFor } from "@/lib/routes-i18n";
 import { useT, formatT } from "@/lib/i18n";
 import { computeOpenStatus, getAnimals, getHours, getOrganisation } from "@/lib/data.functions";
-import { imageForSpecies } from "@/lib/animal-images";
+import { ResidentPhoto } from "@/components/ResidentPhoto";
+import { useAlbumPhotos } from "@/lib/use-album-photos";
 import { FarmFeed } from "@/components/FarmFeed";
 import type { Lang } from "@/lib/i18n";
 import { fetchPageContent } from "@/lib/page-content.functions";
@@ -134,6 +135,7 @@ function EditorialGrid({
   vision: string;
 }) {
   const { t, lang } = useT();
+  const albums = useAlbumPhotos();
   const preview = animals.slice(0, 3);
   return (
     <section className="grid grid-cols-1 gap-8 py-12 lg:grid-cols-12 lg:gap-10">
