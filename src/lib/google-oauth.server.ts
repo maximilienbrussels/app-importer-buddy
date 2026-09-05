@@ -67,14 +67,31 @@ export function readCookie(request: Request, name: string): string | null {
   return null;
 }
 
+export type GoogleTokens = {
+  accessToken: string | null;
+  refreshToken: string | null;
+  scope: string | null;
+  expiresAt: string | null;
+};
+
 export type GoogleProfile = {
   email: string;
   name: string | null;
   picture: string | null;
   emailVerified: boolean;
+  tokens: GoogleTokens;
 };
 
-/** Wisselt de OAuth-code in voor het profiel van de gebruiker. */
+/** Scopes voor de aanmelding + agenda-synchronisatie. */
+export const GOOGLE_SCOPES = [
+  "openid",
+  "email",
+  "profile",
+  "https://www.googleapis.com/auth/calendar.events",
+  "https://www.googleapis.com/auth/calendar.readonly",
+].join(" ");
+
+/** Wisselt de OAuth-code in voor het profiel én de tokens van de gebruiker. */
 export async function exchangeCodeForProfile(
   code: string,
   request: Request,
@@ -98,7 +115,13 @@ export async function exchangeCodeForProfile(
     console.error("[google-oauth] token-uitwisseling mislukt:", res.status, text.slice(0, 300));
     throw new Error("Google kon de aanmelding niet bevestigen.");
   }
-  let payload: { id_token?: string; access_token?: string };
+  let payload: {
+    id_token?: string;
+    access_token?: string;
+    refresh_token?: string;
+    scope?: string;
+    expires_in?: number;
+  };
   try {
     payload = JSON.parse(text) as typeof payload;
   } catch {
@@ -125,8 +148,17 @@ export async function exchangeCodeForProfile(
       (typeof claims?.["given_name"] === "string" ? (claims["given_name"] as string) : null),
     picture: typeof claims?.["picture"] === "string" ? (claims["picture"] as string) : null,
     emailVerified: claims?.["email_verified"] !== false,
+    tokens: {
+      accessToken: payload.access_token ?? null,
+      refreshToken: payload.refresh_token ?? null,
+      scope: payload.scope ?? null,
+      expiresAt: payload.expires_in
+        ? new Date(Date.now() + payload.expires_in * 1000).toISOString()
+        : null,
+    },
   };
 }
+
 
 /** Zorgt dat `app_users` een rolkolom heeft (idempotent). */
 async function ensureRoleColumn(): Promise<boolean> {
