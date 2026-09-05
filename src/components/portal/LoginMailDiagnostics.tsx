@@ -11,7 +11,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const DOT = {
@@ -72,7 +77,9 @@ export function LoginMailDiagnostics() {
             <Loader2 className="size-3.5 animate-spin" /> Controleren…
           </span>
         ) : null}
-        {data?.checks.map((check) => <StatusBadge key={check.id} check={check} />)}
+        <TooltipProvider delayDuration={120}>
+          {data?.checks.map((check) => <StatusBadge key={check.id} check={check} />)}
+        </TooltipProvider>
       </div>
 
       {error ? <p className="mt-3 text-sm text-destructive">{(error as Error).message}</p> : null}
