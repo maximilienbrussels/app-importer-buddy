@@ -191,6 +191,7 @@ export const addProductImage = createServerFn({ method: "POST" })
         media_id: z.string().uuid().optional(),
         url: z.string().url().max(500).optional(),
         alt: text(200).optional(),
+        file_key: z.string().max(512).optional(),
       })
       .refine((v) => v.media_id || v.url, "Kies een afbeelding of geef een link op.")
       .parse(input),
@@ -204,10 +205,11 @@ export const addProductImage = createServerFn({ method: "POST" })
       const next = (await db`
         select coalesce(max(position) + 1, 0) as pos from product_images where product_id = ${data.product_id}
       `) as Array<{ pos: number }>;
+      const position = next[0]?.pos ?? 0;
       await db`
-        insert into product_images (product_id, media_id, url, alt, position)
+        insert into product_images (product_id, media_id, url, alt, position, file_key, is_primary)
         values (${data.product_id}, ${data.media_id ?? null}, ${resolvedUrl ?? null},
-                ${data.alt ?? null}, ${next[0]?.pos ?? 0})
+                ${data.alt ?? null}, ${position}, ${data.file_key ?? null}, ${position === 0})
       `;
       await log(context, {
         action: "create",
@@ -221,6 +223,7 @@ export const addProductImage = createServerFn({ method: "POST" })
     }
   });
 
+/** Ontkoppelt een foto van het product; het bestand blijft in de opslag staan. */
 export const removeProductImage = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) => z.object({ id: z.number().int().positive() }).parse(input))
@@ -233,11 +236,81 @@ export const removeProductImage = createServerFn({ method: "POST" })
         action: "delete",
         entity: "product_image",
         entityId: data.id,
-        summary: `Productfoto ${data.id} verwijderd`,
+        summary: `Productfoto ${data.id} ontkoppeld`,
       });
       return { ok: true as const };
     } catch (error) {
       throw safeError(error, "De foto kon niet verwijderd worden.");
+    }
+  });
+
+/** Ontkoppelt de foto én wist het bronbestand definitief uit de opslag. */
+export const deleteProductImageFile = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .inputValidator((input: unknown) => z.object({ id: z.number().int().positive() }).parse(input))
+  .handler(async ({ data, context }) => {
+    try {
+      await requirePermission(context, "manage_products");
+      const db = await sql();
+      const rows = (await db`
+        select url, file_key from product_images where id = ${data.id}
+      `) as Array<{ url: string | null; file_key: string | null }>;
+      const row = rows[0];
+      await db`delete from product_images where id = ${data.id}`;
+      if (row?.file_key) {
+        const { deleteMediaObjects } = await import("./scaleway-media.server");
+        await deleteMediaObjects([row.file_key]).catch((error: unknown) => {
+          console.error("[shop] bestand wissen mislukt:", error);
+        });
+      } else if (row?.url) {
+        const { deleteByPublicUrl } = await import("./s3.server");
+        await deleteByPublicUrl(row.url).catch((error: unknown) => {
+          console.error("[shop] bestand wissen mislukt:", error);
+        });
+      }
+      await log(context, {
+        action: "delete",
+        entity: "product_image",
+        entityId: data.id,
+        summary: `Productfoto ${data.id} definitief verwijderd`,
+      });
+      return { ok: true as const };
+    } catch (error) {
+      throw safeError(error, "De foto kon niet definitief verwijderd worden.");
+    }
+  });
+
+/** Zet (of wist) de hoofd- of hoverfoto van een product. */
+export const setProductImageRole = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        id: z.number().int().positive(),
+        product_id: z.number().int().positive(),
+        role: z.enum(["primary", "hover"]),
+        value: z.boolean(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    try {
+      await requirePermission(context, "manage_products");
+      const db = await sql();
+      if (data.role === "primary") {
+        await db`update product_images set is_primary = false where product_id = ${data.product_id}`;
+        if (data.value) {
+          await db`update product_images set is_primary = true, is_hover = false where id = ${data.id}`;
+        }
+      } else {
+        await db`update product_images set is_hover = false where product_id = ${data.product_id}`;
+        if (data.value) {
+          await db`update product_images set is_hover = true, is_primary = false where id = ${data.id}`;
+        }
+      }
+      return { ok: true as const };
+    } catch (error) {
+      throw safeError(error, "De rol van de foto kon niet bewaard worden.");
     }
   });
 
@@ -258,6 +331,7 @@ export const reorderProductImages = createServerFn({ method: "POST" })
       throw safeError(error, "De volgorde kon niet bewaard worden.");
     }
   });
+
 
 /* ------------------------------------------------- meldingen bij bestellingen */
 
