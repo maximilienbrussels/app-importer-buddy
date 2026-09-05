@@ -174,10 +174,18 @@ export const getProducts = createServerFn({ method: "GET" }).handler(
       if (products.length === 0) return [];
 
       const ids = products.map((p) => p.id);
+      // Hoofdfoto eerst, dan de hoverfoto, dan de handmatige volgorde. De
+      // rolkolommen bestaan niet in oudere databanken: dan vallen we terug.
       const imageRows = (await db()`select product_id, id, media_id, url, alt, position
              from product_images
              where product_id = any(${ids})
-             order by product_id, position`) as ProductImageRow[];
+             order by product_id, is_primary desc, is_hover desc, position`
+        .catch(
+          () => db()`select product_id, id, media_id, url, alt, position
+             from product_images
+             where product_id = any(${ids})
+             order by product_id, position`,
+        )) as ProductImageRow[];
 
       const imagesByProduct = new Map<number, ProductImageDTO[]>();
       for (const row of imageRows) {
