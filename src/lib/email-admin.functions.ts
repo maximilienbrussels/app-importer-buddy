@@ -367,8 +367,8 @@ export const fetchSubmissions = createServerFn({ method: "GET" })
   });
 
 /**
- * Stuurt een bewaarde inzending opnieuw via de dubbele lijn (Brevo, dan
- * Infomaniak-SMTP) en werkt de status bij.
+ * Stuurt een bewaarde inzending opnieuw via de Brevo HTTP-API en werkt de
+ * status bij. Optioneel naar een gecorrigeerd adres.
  */
 export const resendSubmission = createServerFn({ method: "POST" })
   .middleware([requireAuth])
