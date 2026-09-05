@@ -24,6 +24,7 @@ import {
   SCOPE_GROUPS,
 } from "@/lib/api-keys.functions";
 import type { ApiKeyPublic } from "@/lib/api-keys.server";
+import { SyncSettings } from "@/components/admin/SyncSettings";
 
 const GROUP_LABEL_KEY: Record<(typeof SCOPE_GROUPS)[number]["key"], string> = {
   shop: "api.group.shop",
@@ -246,6 +247,11 @@ export function ApiKeysPage() {
           </TableBody>
         </Table>
       </div>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Koppelingen</h2>
+        <SyncSettings />
+      </section>
     </div>
   );
 }
